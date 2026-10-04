@@ -29,13 +29,9 @@ public class ProductoService implements  IProductoService{
     @Override
     public Producto crearProducto(Producto producto) {
 
-        // validación de que el producto no sea null
-        if(producto == null){
-            return  null;
-        }
 
         // falta validar si cada uno de los elementos es null o no
-        boolean validar = this.validarDates(producto);
+        boolean validar = this.validarDatos(producto);
 
         if(!validar){
             return null;
@@ -56,13 +52,16 @@ public class ProductoService implements  IProductoService{
         }
 
         // falta validar si cada uno de los elementos es null o no
-        boolean valido = this.validarDates(producto);
-
-        // actualizamos los datos del producto
+        boolean valido = this.validarDatos(producto);
 
         if(!valido){
             return null;
         }
+
+
+        // actualizamos los datos del producto
+
+
 
         buscarProduct.setNombre(producto.getNombre());
         buscarProduct.setMarca(producto.getMarca());
@@ -89,7 +88,7 @@ public class ProductoService implements  IProductoService{
         return true;
     }
 
-    public boolean validarDates(Producto producto){
+    public boolean validarDatos(Producto producto){
         if(producto.getNombre() == null || producto.getNombre().isBlank()){
             return false;
         }
