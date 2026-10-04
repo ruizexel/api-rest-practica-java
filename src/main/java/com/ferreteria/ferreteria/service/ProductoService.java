@@ -27,7 +27,7 @@ public class ProductoService implements  IProductoService{
     }
 
     @Override
-    public Producto crear(Producto producto) {
+    public Producto crearProducto(Producto producto) {
 
         // validación de que el producto no sea null
         if(producto == null){
@@ -41,14 +41,36 @@ public class ProductoService implements  IProductoService{
     public Producto editarProducto(Long codigoProd, Producto producto) {
         // buscar si existe producto
         Producto buscarProduct = buscarProducto(codigoProd);
+
+        // Validar
         if(buscarProduct == null){
             return  null;
         }
-        return productoRepository.save(producto);
+
+        // actualizamos los datos del producto
+
+        buscarProduct.setNombre(producto.getNombre());
+        buscarProduct.setMarca(producto.getMarca());
+        buscarProduct.setCategoria(producto.getCategoria());
+        buscarProduct.setPrecio(producto.getPrecio());
+        buscarProduct.setStock(producto.getStock());
+        buscarProduct.setDescripcion(producto.getDescripcion());
+
+        return productoRepository.save(buscarProduct);
     }
 
     @Override
-    public boolean delete(Long codProducto) {
-        return false;
+    public boolean eliminarProducto(Long codProducto) {
+
+        // buscar si existe
+        Producto eliminarProducto = buscarProducto(codProducto);
+
+        // validar si existe
+        if(eliminarProducto == null){
+            return false;
+        }
+
+        productoRepository.delete(eliminarProducto);
+        return true;
     }
 }

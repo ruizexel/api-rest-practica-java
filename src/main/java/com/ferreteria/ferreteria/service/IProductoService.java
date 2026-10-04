@@ -15,12 +15,12 @@ public interface IProductoService {
 
     // CREATE
 
-    Producto crear(Producto producto);
+    Producto crearProducto(Producto producto);
 
     // UPDATE
     Producto editarProducto(Long codigoProd, Producto producto);
 
     // DELETE
 
-    boolean delete(Long codProducto);
+    boolean eliminarProducto(Long codProducto);
 }
