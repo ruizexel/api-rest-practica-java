@@ -1,7 +1,6 @@
 package com.ferreteria.ferreteria.controller;
 
 import com.ferreteria.ferreteria.modells.Producto;
-import com.ferreteria.ferreteria.repository.IProductoRepository;
 import com.ferreteria.ferreteria.service.IProductoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,8 +40,8 @@ public class ProductoController {
     public ResponseEntity<?> crearProducto(@RequestBody Producto producto){
         Producto productoCreado = productoService.crearProducto(producto);
 
-        if(producto == null){
-            return ResponseEntity.badRequest().body("Los datos del producto son valido");
+        if(productoCreado == null){
+            return ResponseEntity.badRequest().body("Los datos del producto no son válidos");
         }
         return ResponseEntity.status(HttpStatus.CREATED).body(productoCreado);
     }

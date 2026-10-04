@@ -33,6 +33,14 @@ public class ProductoService implements  IProductoService{
         if(producto == null){
             return  null;
         }
+
+        // falta validar si cada uno de los elementos es null o no
+        boolean validar = this.validarDates(producto);
+
+        if(!validar){
+            return null;
+        }
+
         // Id se genera automaticamente en la BD y con esto la devolvemos junto con el producto
         return productoRepository.save(producto);
     }
@@ -47,7 +55,14 @@ public class ProductoService implements  IProductoService{
             return  null;
         }
 
+        // falta validar si cada uno de los elementos es null o no
+        boolean valido = this.validarDates(producto);
+
         // actualizamos los datos del producto
+
+        if(!valido){
+            return null;
+        }
 
         buscarProduct.setNombre(producto.getNombre());
         buscarProduct.setMarca(producto.getMarca());
@@ -71,6 +86,30 @@ public class ProductoService implements  IProductoService{
         }
 
         productoRepository.delete(eliminarProducto);
+        return true;
+    }
+
+    public boolean validarDates(Producto producto){
+        if(producto.getNombre() == null || producto.getNombre().isBlank()){
+            return false;
+        }
+
+        if(producto.getMarca() == null || producto.getMarca().isBlank()){
+            return false;
+        }
+
+        if(producto.getCategoria() == null || producto.getCategoria().isBlank()){
+            return false;
+        }
+
+        if(producto.getPrecio() == null || producto.getPrecio() <= 0){
+            return false;
+        }
+
+        if(producto.getStock() <= 0){
+            return false;
+        }
+
         return true;
     }
 }
