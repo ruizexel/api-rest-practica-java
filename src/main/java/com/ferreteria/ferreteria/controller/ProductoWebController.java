@@ -7,7 +7,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/productos")
 public class ProductoWebController {
 
     private final IProductoService productoService;
@@ -16,13 +15,13 @@ public class ProductoWebController {
     }
 
     // Get oara traer la lista de productos
-    @GetMapping
+    @GetMapping("/")
     public String traerProductos(Model model){
         model.addAttribute(
                 "productos", productoService.traerProductos()
         );
 
-        return "lista";
+        return "index";
     }
 
     // Get para traer la pagina/vista del formulario
@@ -31,7 +30,7 @@ public class ProductoWebController {
         model.addAttribute("producto", new Producto());
         model.addAttribute("titulo", "Registrar Producto");
 
-        return "formulario";
+        return "productos/formulario";
     }
 
     // Post para guardar el formulario
@@ -62,7 +61,7 @@ public class ProductoWebController {
                     "Revisa los datos. Nombre, marca y categoria son obligatorios." +
                             "El precio deber ser mayor a cero y el stock no puede ser negativo-"
             );
-            return "formulario";
+            return "productos/formulario";
         }
         return "redirect:/productos";
     }
@@ -78,7 +77,7 @@ public class ProductoWebController {
         model.addAttribute("producto", producto);
         model.addAttribute("titulo", "Editar producto");
 
-        return "formulario";
+        return "productos/formulario";
     }
 
 

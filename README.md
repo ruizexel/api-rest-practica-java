@@ -1,88 +1,99 @@
 # Ferretería
 
-Proyecto de práctica para aprender **Spring Boot** y desarrollar una aplicación web de gestión de productos. La idea es trabajar con el patrón **MVC**, persistir los datos con **Spring Data JPA** y usar **Thymeleaf** para las vistas HTML. También se contempla exponer operaciones mediante una API REST.
+Aplicación de práctica para aprender Spring Boot mediante un sistema de gestión de inventario. El proyecto se está construyendo como un **monolito MVC**: la aplicación web, la lógica de negocio, el acceso a datos y las vistas viven juntas en un mismo proyecto y se ejecutan como una sola aplicación.
 
-> **Estado actual:** el proyecto está en desarrollo. Por ahora incluye la clase de arranque y la entidad `Producto`; todavía no hay controladores, servicios, repositorios ni plantillas Thymeleaf implementados.
+La interfaz principal usa **Thymeleaf** para renderizar páginas HTML en el servidor. También existe una API REST para consultar y administrar los mismos productos; es una forma adicional de acceso, no una arquitectura de microservicios ni el centro de la aplicación.
+
+## Estado actual
+
+Ya está implementado el CRUD de productos en las dos interfaces:
+
+- La aplicación web permite listar, registrar, editar y eliminar productos desde páginas Thymeleaf.
+- La API REST ofrece operaciones para listar, buscar, crear, editar y eliminar productos en formato JSON.
+- La lógica y persistencia se comparten: ambos controladores utilizan el mismo servicio y repositorio.
+- Las vistas de listado y formulario tienen estilos CSS propios.
 
 ## Tecnologías
 
-- Java 25
-- Spring Boot 4.1.1
-- Spring Web MVC
-- Spring Data JPA
-- Thymeleaf
-- MySQL Connector/J
-- Maven
+- Java 25 y Spring Boot 4.1.1.
+- Spring Web MVC y Thymeleaf para la aplicación web.
+- Spring Data JPA para persistencia.
+- Maven para dependencias y ejecución.
+- Configuración local de base de datos MariaDB.
 
-## Estructura actual
+## Cómo se organiza
 
 ```text
-src/
-├── main/
-│   ├── java/com/ferreteria/ferreteria/
-│   │   ├── FerreteriaApplication.java
-│   │   └── modells/
-│   │       └── Producto.java
-│   └── resources/
-│       └── application.properties
-└── test/
-    └── java/com/ferreteria/ferreteria/
-        └── FerreteriaApplicationTests.java
+src/main/java/com/ferreteria/ferreteria/
+├── FerreteriaApplication.java
+├── controller/
+│   ├── ProductoWebController.java
+│   └── ProductoRestController.java
+├── modells/
+│   └── Producto.java
+├── repository/
+│   └── IProductoRepository.java
+└── service/
+    ├── IProductoService.java
+    └── ProductoService.java
+
+src/main/resources/
+├── application.properties
+├── static/css/
+│   ├── formulario.css
+│   └── styles.css
+└── templates/productos/
+    ├── formulario.html
+    └── lista.html
 ```
 
-La entidad `Producto` representa un producto de ferretería y contiene código, nombre, marca, categoría, precio, stock y descripción. Su código se genera automáticamente mediante JPA.
+El flujo de la aplicación es:
 
-## MVC, Thymeleaf y API REST
+1. Un controlador recibe la petición web o REST.
+2. El servicio aplica las reglas del CRUD y valida los datos del producto.
+3. El repositorio de Spring Data JPA consulta o modifica la base de datos.
+4. Para las rutas web, el controlador devuelve una vista Thymeleaf; para las rutas REST, devuelve datos o un estado HTTP.
 
-En una aplicación MVC tradicional, el controlador recibe la petición, consulta la lógica de negocio y devuelve una vista. Thymeleaf permite generar esa vista HTML en el servidor.
+`Producto` es la entidad persistida. Sus campos son código autogenerado, nombre, marca, categoría, precio, stock y descripción. La validación actual requiere nombre, marca, categoría, precio mayor que cero y stock mayor que cero; la descripción es opcional.
 
-Una API REST, en cambio, normalmente responde con datos —por ejemplo, JSON— en lugar de una página HTML. Ambos enfoques pueden convivir en el mismo proyecto: se pueden crear rutas MVC que rendericen plantillas Thymeleaf y rutas REST para consumir los datos desde otros clientes.
+## Rutas disponibles
 
-La separación prevista para el proyecto es:
+### Aplicación web
 
-- **Modelo:** entidades y acceso a datos, como `Producto`.
-- **Vista:** plantillas HTML con Thymeleaf.
-- **Controlador:** recibe las peticiones web o REST y coordina la respuesta.
-- **Servicio (capa adicional):** concentra las reglas de negocio entre los controladores y los repositorios.
+| Método | Ruta | Uso |
+|---|---|---|
+| `GET` | `/productos` | Ver el inventario |
+| `GET` | `/productos/nuevo` | Mostrar el formulario de registro |
+| `POST` | `/productos/crear` | Crear un producto o guardar cambios |
+| `GET` | `/productos/editar/{codProd}` | Mostrar el formulario de edición |
+| `POST` | `/productos/eliminar/{codProd}` | Eliminar un producto |
 
-Estas capas describen la organización objetivo; aún no todas están creadas.
+### API REST
 
-## Requisitos
+| Método | Ruta | Uso |
+|---|---|---|
+| `GET` | `/api/productos` | Listar productos |
+| `GET` | `/api/productos/{codProd}` | Consultar un producto |
+| `POST` | `/api/productos` | Crear un producto |
+| `PUT` | `/api/productos/{codProd}` | Editar un producto |
+| `DELETE` | `/api/productos/{codProd}` | Eliminar un producto |
 
-- JDK 25.
-- MySQL instalado y en ejecución.
-- Una base de datos MySQL creada para el proyecto.
+Las operaciones de creación y edición de la API reciben el producto en el cuerpo de la petición como JSON.
 
-## Configuración de la base de datos
+## Base de datos y ejecución
 
-Antes de ejecutar la aplicación, configura `src/main/resources/application.properties` con la URL de tu base de datos y tus credenciales locales. Por ejemplo:
+`src/main/resources/application.properties` contiene una configuración local para MariaDB (`ferreteria_db` en `localhost:3307`). Ajusta esos valores a tu instalación y no publiques credenciales personales.
 
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/ferreteria
-spring.datasource.username=TU_USUARIO
-spring.datasource.password=TU_CONTRASENA
-```
+Antes de ejecutar, hay que comprobar que el controlador JDBC de MariaDB configurado en `application.properties` coincida con la dependencia declarada en `pom.xml`; actualmente esos archivos declaran controladores distintos.
 
-Crea previamente la base de datos `ferreteria` en MySQL o ajusta el nombre de la URL al que hayas creado. No guardes credenciales reales en el repositorio.
-
-## Ejecutar y probar
-
-Desde la raíz del proyecto, una vez configurada la conexión a MySQL:
+Con la base de datos y el controlador configurados:
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
-Para ejecutar las pruebas:
+La aplicación web queda disponible en `http://localhost:8080/productos`. Para ejecutar las pruebas:
 
 ```bash
 ./mvnw test
 ```
-
-## Próximos pasos posibles
-
-- Crear el repositorio JPA para `Producto`.
-- Añadir un servicio con las operaciones de gestión de productos.
-- Implementar controladores REST y/o controladores MVC.
-- Crear formularios y plantillas Thymeleaf.
-- Añadir validaciones y pruebas para las operaciones.
