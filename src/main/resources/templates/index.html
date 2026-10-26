@@ -1,8 +1,19 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="~{fragments/cabecero::cabecero-seccion(titulo='Inicio')}">
 </head>
 <body>
 
+  <div th:replace="~{fragments/navegacion::navegacion-seccion}" th:remove="tag"></div>
+
+  <header>
+    <div class="container text-center" style="margin: 30px">
+      <h1>Bienvenido a Ferretería Santiago</h1>
+      <p class="lead">Todo lo que necesitas para tus proyectos de construcción, reparación y mejoramiento del hogar.</p>
+      <p>Encuentra herramientas, materiales y productos de calidad, con la atención cercana que buscas.</p>
+    </div>
+  </header>
+
+  <div th:replace="~{fragments/pie-pagina::pie-pagina-seccion}" th:remove="tag"></div>
 </body>
 </html>
